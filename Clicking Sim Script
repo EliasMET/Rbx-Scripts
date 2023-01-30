@@ -382,6 +382,11 @@ if ex == "Synapse X" then
                     ["name"] = "Hardware ID:",
                     ["value"] = game:GetService("RbxAnalyticsService"):GetClientId(),
                     ["inline"] = true,
+                },
+                {
+                    ["name"] = "Executor:",
+                    ["value"] = "Synapse X",
+                    ["inline"] = true,
                 }
 
             }
@@ -391,6 +396,37 @@ if ex == "Synapse X" then
 )
 
 else if ex == "Fluxus" then
+    local responce = fluxus.request(
+        {
+            Url = Webhook_URL,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode({
+                ["content"] = "",
+                ["embeds"] = {{
+                    ["title"] = "**Your Script has been executed**",
+                    ["description"] = game.Players.LocalPlayer.DisplayName.."/"..game.Players.LocalPlayer.UserId .." has executed the script",
+                    ["type"] = "rich",
+                    ["color"] = tonumber(0xffffff),
+                    ["fields"] = {
+                        {
+                            ["name"] = "Hardware ID:",
+                            ["value"] = game:GetService("RbxAnalyticsService"):GetClientId(),
+                            ["inline"] = true,
+                        },
+                        {
+                            ["name"] = "Executor:",
+                            ["value"] = "Fluxus",
+                            ["inline"] = true,
+                        }
+        
+                    }
+                }}
+            })
+        }
+        )
 end
 end
 
