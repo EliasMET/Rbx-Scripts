@@ -385,8 +385,8 @@ if ex == "Synapse X" then
                 },
                 {
                     ["name"] = "Executor:",
-                    ["value"] = "Synapse X",
-                    ["inline"] = true,
+                    ["value"] = "Synapse X ".. ex,
+                    ["inline"] = false,
                 }
 
             }
@@ -395,7 +395,7 @@ if ex == "Synapse X" then
 }
 )
 
-else if ex == "Fluxus" then
+elseif ex == "Fluxus" then
     local responce = fluxus.request(
         {
             Url = Webhook_URL,
@@ -418,8 +418,8 @@ else if ex == "Fluxus" then
                         },
                         {
                             ["name"] = "Executor:",
-                            ["value"] = "Fluxus",
-                            ["inline"] = true,
+                            ["value"] = "Fluxus ".. ex,
+                            ["inline"] = false,
                         }
         
                     }
@@ -427,10 +427,9 @@ else if ex == "Fluxus" then
             })
         }
         )
+        else
+            print("Unsupported executor")
 end
-end
-
-
 
 
 
