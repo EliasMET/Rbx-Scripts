@@ -290,3 +290,72 @@ local Keybind = Tab5:CreateKeybind({
     end
    end,
 })
+
+local Button = Tab3:CreateButton({
+    Name = "Delete all Pets! WARNING this can not be undone!",
+    Callback = function()
+        print("Deleting Player Pets...")
+        for i,v in pairs(player.Pets:GetChildren()) do
+            if v then
+                print(v.PetID.Value)
+                local args = {
+         [1] = "Mass Delete",
+         [2] = {
+             ["Pets"] = {
+                 [1] = v.PetID.Value
+             }
+         }
+     }
+     game:GetService("ReplicatedStorage").RemoteEvents.PetActionRequest:InvokeServer(unpack(args))
+            end
+        end
+    end,
+ })
+
+local Section = Tab4:CreateSection("Spam Chat")
+
+
+local Input = Tab4:CreateInput({
+    Name = "Text to Spam",
+    PlaceholderText = "Input",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        getgenv().SpamText = Text
+    end,
+ })
+
+local Slider4 = Tab4:CreateSlider({
+   Name = "Delay",
+   Range = {1, 60},
+   Increment = 1,
+   Suffix = "Seconds",
+   CurrentValue = 5,
+   Flag = "Slider3", 
+   Callback = function(Value)
+    getgenv().SpamDelay = Value
+   end,
+})
+
+local Toggle5 = Tab4:CreateToggle({
+   Name = "Spam Toggle",
+   CurrentValue = false,
+   Flag = "Toggle5", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+    if Value then
+        getgenv().chatspam = true
+        chatSpam(getgenv().SpamText, getgenv().SpamDelay)
+        else
+            getgenv().chatspam = falsed
+    end
+
+   end,
+})
+
+ function NotifyPlayer(title, content, duration)
+Rayfield:Notify({
+   Title = title,
+   Content = content,
+   Duration = duration,
+   Image = 4483362458,
+})    
+ end
