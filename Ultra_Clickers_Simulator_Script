@@ -1,0 +1,292 @@
+	print("Supported Game")
+		-- Variables
+local Script_Version = "1.5V"
+print(Script_Version)
+getgenv().autotab = false
+getgenv().autorebirth = false
+getgenv().autoopeneggs = false
+getgenv().chatspam = false
+getgenv().SpamDelay = 5
+local Codes = game:GetService("ReplicatedStorage")["Code_Folder"]:GetChildren()
+local player = game.Players.LocalPlayer
+
+local Noclip = nil
+local Clip = nil
+
+function noclip()
+	Clip = false
+	local function Nocl()
+		if Clip == false and game.Players.LocalPlayer.Character ~= nil then
+			for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+				if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
+					v.CanCollide = false
+				end
+			end
+		end
+		wait(0.21)
+	end
+	Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
+end
+
+function clip()
+	if Noclip then Noclip:Disconnect() end
+	Clip = true
+end
+
+function doTab()
+    spawn(function()
+        while getgenv().autotab do
+            workspace.Events.AddClick:FireServer()
+            wait()
+         end
+     end)
+end
+
+function chatSpam(msg, Delay)
+    spawn(function ()
+    while getgenv().chatspam do
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg,"All")
+            wait(Delay)
+            wait()
+            print(msg)
+        end
+    end)
+end
+
+function changeWalkSpeed(speed)
+    if player.Character then
+        player.Character.Humanoid.WalkSpeed = speed
+    end
+end  
+
+function changeJumpPower(power)
+    if player.Character then
+        player.Character.Humanoid.JumpPower = power
+    end
+end   
+
+function getCurrentPlayerPOS()
+    if player.Character then
+        return player.Character.HumanoidRootPart.Position
+    end
+    return false
+end
+
+function telportTo(placeCFrame)
+    if player.Character then
+        player.Character.HumanoidRootPart.CFrame = placeCFrame
+    end
+end
+
+
+
+function teleportToWorld(world)
+    if game:GetService("Workspace").Portals:FindFirstChild(world) then
+        print(world)
+        telportTo(game:GetService("Workspace").Portals[world].Teleport.CFrame)
+        else
+            print("World not found")
+    end
+end
+
+--function redeemCode(code)
+--local args = {
+ --   [1] = game:GetService("ReplicatedStorage").Code_Folder,
+--    [2] = "15M"
+--    }
+ --    game:GetService("Players").LocalPlayer.PlayerGui.Main.MainFrame.CodesFrame.RedeemButton:FindFirstChild("Redeem Button_Script").Clicks:FireServer(unpack(args))
+--end
+
+--UI
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+--Key System
+setclipboard("https://link-hub.net/432261/first-key-stage-op-scrip")
+
+local Window = Rayfield:CreateWindow({
+   Name = "Ultra Clickers Simulator "..Script_Version,
+   LoadingTitle = "Loading Trophy Hub",
+   LoadingSubtitle = "by Beatorld",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "Trophy Hub", -- Create a custom folder for your hub/game
+      FileName = "Trophy Hub Settings"
+   },
+   Discord = {
+      Enabled = true,
+      Invite = "Pbk7CEU3E6", -- The Discord invite code, do not include discord.gg/
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Trophy Hub",
+      Subtitle = "Key System",
+      Note = "Join the discord and go to #getkey to get the key",
+      FileName = "Trophy Hub",
+      SaveKey = true,
+      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = "https://pastebin.com/raw/yxMJnDGf"
+   }
+})
+
+local Tab = Window:CreateTab("Farming", 4483362458) -- Title, Image
+
+local Tab5 = Window:CreateTab("Player", 4483362458) -- Title, Image
+
+local Tab2 = Window:CreateTab("Teleporting", 4483362458) -- Title, Image
+
+local Tab3 = Window:CreateTab("Pets", 6031260782) -- Title, Image
+
+local Tab4 = Window:CreateTab("Miscellaneous", 4483362458) -- Title, Image
+
+
+local Button = Tab4:CreateButton({
+    Name = "Unlock all Codes. WARNING: This will cause lag!",
+    Callback = function()
+        local RedeemScript = game:GetService("Players").LocalPlayer.PlayerGui.Main.MainFrame.CodesFrame.RedeemButton:FindFirstChild("Redeem Button_Script")
+          for i, v in pairs(player["Code_Folder"]:GetChildren()) do
+            v.Value = false
+            local args = {
+                [1] = game:GetService("ReplicatedStorage").Code_Folder,[2] = v.Name}
+               RedeemScript.Clicks:FireServer(unpack(args))
+                local args = {
+                [1] = game:GetService("ReplicatedStorage").Code_Folder,[2] = v.Name}
+               RedeemScript.Gems:FireServer(unpack(args))
+                local args = {
+                [1] = game:GetService("ReplicatedStorage").Code_Folder,[2] = v.Name}
+                RedeemScript.P1h:FireServer(unpack(args))
+                local args = {
+                [1] = game:GetService("ReplicatedStorage").Code_Folder,[2] = v.Name}
+                RedeemScript.FreePet:FireServer(unpack(args))
+          end          
+    end,
+ })
+
+
+local Toggle = Tab:CreateToggle({
+    Name = "Auto Tap",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+		print(Value)
+        getgenv().autotab = Value
+        if Value then
+            print("Yes")
+            doTab()
+        end
+    end,
+ })
+
+--Finding Wolrds
+local Worlds = {}
+for i,v in pairs(game:GetService("Workspace").Portals:GetChildren()) do
+    if v:IsA("Model") then
+        Worlds[#Worlds+1] = v.Name 
+    end
+end
+
+
+local Dropdown = Tab2:CreateDropdown({
+   Name = "Teleport to World",
+   Options = Worlds,
+   CurrentOption = "...",
+   Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Option)
+    teleportToWorld(Option)
+   end,
+})
+
+
+local Players = {}
+for i,v in pairs(game.Players:GetChildren()) do
+     Players[#Players+1] = v.Name 
+end
+
+local Dropdown = Tab2:CreateDropdown({
+    Name = "Teleport to Player",
+    Options = Players,
+    CurrentOption = "...",
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Option)  
+        telportTo(game.Players:FindFirstChild(Option).Character.HumanoidRootPart.CFrame)
+    end,
+ })
+
+
+local Button = Tab4:CreateButton({
+   Name = "Unlock all Rebirths!",
+   Callback = function()
+         local Rebirths = game:GetService("Players").LocalPlayer.PlayerGui.Main.MainFrame.RebithsShop.ScrollingFrame:GetChildren()
+            for i, v in pairs(Rebirths) do
+                if v:IsA("TextButton") then
+                   v.Visible = true
+            end
+        end
+        Rayfield:Notify({
+            Title = "Rebirths Successfully unlocked",
+            Content = "You now have access to all rebirths have fun!",
+            Duration = 5,
+         })  
+   end,
+})
+
+local Slider = Tab5:CreateSlider({
+   Name = "Set WalkSpeed",
+   Range = {1, 300},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 23,
+   Flag = "Slider1", 
+   Callback = function(Value)
+    changeWalkSpeed(Value)
+   end,
+})
+
+local Slider2 = Tab5:CreateSlider({
+    Name = "Set JumPower",
+    Range = {1, 300},
+    Increment = 1,
+    Suffix = "Power",
+    CurrentValue = 51,
+    Flag = "Slider2", 
+    Callback = function(Value)
+     changeJumpPower(Value)
+    end,
+ })
+
+ 
+local Button = Tab5:CreateButton({
+   Name = "Reset Values",
+   Callback = function()
+    Slider:Set(23)
+    Slider2:Set(51)
+   end,
+})
+
+ local Button2 = Tab4:CreateButton({
+    Name = "Kill Yourself",
+    Callback = function()
+        if player.Character then
+            player.Character.Humanoid.Health = 0
+        end
+    end,
+ })
+
+local NoClip = false
+
+local Keybind = Tab5:CreateKeybind({
+   Name = "Nolcip Key Bind",
+   CurrentKeybind = "N",
+   HoldToInteract = false,
+   Flag = "Keybind1", 
+   Callback = function(Keybind)
+    if NoClip then
+        NoClip = false
+        clip()
+        NotifyPlayer("Disabled Noclip", "Noclip Successfully disabled press your Keybind to enable Noclip", 2)
+        else
+            NoClip = true
+            noclip()
+            NotifyPlayer("Enabled Noclip", "Noclip Successfully enabled press your Keybind to disable Noclip", 2)
+    end
+   end,
+})
