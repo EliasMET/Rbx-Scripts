@@ -1,0 +1,131 @@
+print("Supported Game")
+local plyr = game:GetService("Players").LocalPlayer
+
+function AwardAllBadges()
+game:GetService("ReplicatedStorage").PumpkingBadge:FireServer()
+game:GetService("ReplicatedStorage").WinnersBadge:FireServer()
+game:GetService("ReplicatedStorage").SecretBadge:FireServer()
+end
+function SetStage(Stage)
+local args = {
+    [1] = Stage
+}
+game:GetService("ReplicatedStorage").StageChange:FireServer(unpack(args))
+end
+
+function TeleportTo(CFrame)
+    if plyr.Character then
+        print("Teleporting...")
+        plyr.Character.HumanoidRootPart.CFrame = CFrame
+end
+end
+
+function GetVIPTools()
+for i,v in pairs(game:GetService("ReplicatedStorage").VipWeapons.VipTools:GetChildren()) do
+    v:Clone().Parent = plyr.Backpack
+end
+end
+
+function GetPets()
+for i,v in pairs(plyr.Character.ShopCharacterScripts.DPDeathShop.Remotes:GetChildren()) do
+    if v:IsA("RemoteEvent") then
+        local Remote = v.Name
+        print(Remote)
+        game:GetService("Players").LocalPlayer.Character.ShopCharacterScripts.DPDeathShop.Remotes[v.Name]:FireServer()
+    end
+end
+end
+
+
+
+
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+
+local Window = Rayfield:CreateWindow({
+Name = "SIREN COP'S PRISON Script V1",
+LoadingTitle = "Loading Trophy Hub",
+LoadingSubtitle = "by Betalord",
+ConfigurationSaving = {
+  Enabled = true,
+  FolderName = nil, -- Create a custom folder for your hub/game
+  FileName = "Trophy Hub"
+},
+Discord = {
+  Enabled = true,
+  Invite = "rk9yVaFGdu", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD.
+  RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+},
+KeySystem = true, -- Set this to true to use our key system
+KeySettings = {
+  Title = "Trophy Hub",
+  Subtitle = "Key System",
+  Note = "Join the Discord to get the key (https://discord.gg/rk9yVaFGdu)",
+  FileName = "Trophy Hub",
+  SaveKey = true,
+  GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+  Key = "https://pastebin.com/raw/yxMJnDGf"
+}
+})
+
+local Tab = Window:CreateTab("Stage Managment", 4483362458) -- Title, Image
+local Tab2 = Window:CreateTab("Teleporting", 4483362458) -- Title, Image
+local Tab3 = Window:CreateTab("Tools", 4483362458) -- Title, Image
+local Tab4 = Window:CreateTab("Miscellaneous", 4483362458) -- Title, Image
+
+local Slider = Tab:CreateSlider({
+Name = "Stage",
+Range = {1, 22},
+Increment = 1,
+Suffix = "Stage",
+CurrentValue = 1,
+Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+Callback = function(Value)
+SetStage(Value)
+end,
+})
+
+local Button = Tab3:CreateButton({
+Name = "Get all VIP Tools",
+Callback = function()
+    GetVIPTools()
+end,
+})
+
+local Button2 = Tab3:CreateButton({
+Name = "Get all Pets",
+Callback = function()
+    GetPets()
+end,
+})
+
+local Players = {}
+for i,v in pairs(game.Players:GetChildren()) do
+  Players[#Players+1] = v.Name 
+end
+
+local Dropdown = Tab2:CreateDropdown({
+Name = "Teleport to Player",
+Options = Players,
+CurrentOption = "...",
+Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+Callback = function(Option)  
+    TeleportTo(game.Players:FindFirstChild(Option).Character.HumanoidRootPart.CFrame)
+end,
+})
+
+
+local Button3 = Tab4:CreateButton({
+Name = "Award all Badges",
+Callback = function()
+AwardAllBadges()
+end,
+})
+
+local Button4 = Tab4:CreateButton({
+Name = "Kill Your Player",
+Callback = function()
+    if plyr.Character then
+        plyr.Character.Humanoid.Health = 0
+    end
+end,
+})
