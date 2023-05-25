@@ -18,6 +18,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl coreutils
 
+      - name: Install Sim command
+        run: |
+          sudo apt-get install -y sim-command
+
       - name: Get commit SHA
         id: get-commit-sha
         run: echo "::set-output name=commit-sha::$(git rev-parse HEAD)"
