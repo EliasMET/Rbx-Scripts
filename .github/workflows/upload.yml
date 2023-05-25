@@ -15,18 +15,25 @@ jobs:
 
       - name: Get file changes
         id: file-changes
-        run: echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
+        run: echo ${{ steps.file-changes.outputs.files }} > files.txt
 
-      - name: Install cURL
-        run: sudo apt-get install -y curl
+      - name: Install httpie
+        run: sudo apt-get install -y httpie
+
+      - name: Read file changes
+        id: read-file-changes
+        run: |
+          while IFS= read -r file; do
+            echo "::set-env name=FILE_CHANGED::$file"
+          done < files.txt
 
       - name: Trigger request for each changed file
         id: trigger-request
         run: |
-          for file in ${{ steps.file-changes.outputs.files }}; do
+          while IFS= read -r file; do
             content=$(base64 $file)
             script_id=$(basename $file | cut -f1 -d.)
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
-            response=$(curl -X POST -H "Content-Type: application/json" -d "$payload" https://scriptserverelias.000webhostapp.com/upload.php)
+            response=$(http -f POST https://scriptserverelias.000webhostapp.com/upload.php <<< $payload)
             echo "$response"
-          done
+          done < files.txt
