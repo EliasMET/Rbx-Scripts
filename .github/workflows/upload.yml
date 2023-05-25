@@ -22,9 +22,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl coreutils
 
+      - name: Get changed files
+        id: get-changed-files
+        run: |
+          commit_sha=$(git rev-parse HEAD)
+          changed_files=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+                             https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$commit_sha | \
+                             jq -r '.files[].filename')
+          echo "::set-output name=files::$changed_files"
+
       - name: Run script
         run: |
-          files=$(git diff --name-only HEAD^ --)
+          files=${{ steps.get-changed-files.outputs.files }}
 
           if [[ -z $files ]]; then
             echo "No file changes detected."
