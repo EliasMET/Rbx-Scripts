@@ -17,8 +17,8 @@ jobs:
         id: set-script-id
         run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
-      - name: Install curl
-        run: sudo apt-get update && sudo apt-get install -y curl
+      - name: Install httpie
+        run: sudo apt-get update && sudo apt-get install -y httpie
 
       - name: List changed files
         id: list-files
@@ -33,6 +33,6 @@ jobs:
             content=$(base64 $file)
             script_id=${{ env.SCRIPT_ID }}
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
-            response=$(curl -X POST -H "Content-Type: application/json" -d "$payload" https://scriptserverelias.000webhostapp.com/upload.php)
+            response=$(http --ignore-stdin --check-status POST https://scriptserverelias.000webhostapp.com/upload.php <<< "$payload")
             echo "$response"
           done < files.txt
