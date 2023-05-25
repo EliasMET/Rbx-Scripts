@@ -18,11 +18,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl coreutils
 
+      - name: Get previous commit hash
+        id: get-previous-commit
+        run: |
+          previous_commit=$(git rev-parse HEAD^)
+          echo "::set-output name=commit::$previous_commit"
+
       - name: Get changed files
         id: get-changed-files
         run: |
-          commit_sha=$(git rev-parse HEAD)
-          changed_files=$(git diff --name-only HEAD^ --)
+          previous_commit=${{ steps.get-previous-commit.outputs.commit }}
+          changed_files=$(git diff --name-only $previous_commit --)
           echo "::set-output name=files::$changed_files"
 
       - name: Run script
