@@ -13,22 +13,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install cURL and base64
+      - name: Install cURL and md5sum
         run: |
           sudo apt-get update
           sudo apt-get install -y curl coreutils
 
-      - name: Get commit SHA
-        id: get-commit-sha
-        run: echo "::set-output name=commit-sha::$(git rev-parse HEAD)"
-
       - name: Get changed files
         id: get-changed-files
         run: |
-          commit_sha=${{ steps.get-commit-sha.outputs.commit-sha }}
-          changed_files=$(curl -s -H "Accept: application/vnd.github.v3+json" \
-                             https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$commit_sha | \
-                             jq -r '.files[].filename')
+          commit_sha=$(git rev-parse HEAD)
+          changed_files=$(git diff --name-only HEAD^ --)
           echo "::set-output name=files::$changed_files"
 
       - name: Run script
@@ -41,8 +35,9 @@ jobs:
           fi
 
           for file in $files; do
+            fileName=$(basename "$file")
+            scriptId=$(echo -n "$fileName" | md5sum | awk '{print $1}' | tr -dc '0-9' | head -c 5)
             content=$(base64 -w 0 "$file")
-            scriptId=$(md5sum "$file" | awk '{print $1}' | tr -dc '0-9' | head -c 5)
 
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
