@@ -1,4 +1,4 @@
 --Deprecated use https://raw.githubusercontent.com/betalord1231/Rbx-Scripts/main/Load_Hub
 
-warn("Deprecated Loadstring please use https://raw.githubusercontent.com/betalord1231/Rbx-Scripts/main/Load_Hub in the future!")
+warn("Deprecated loadstring please use https://raw.githubusercontent.com/betalord1231/Rbx-Scripts/main/Load_Hub in the future!")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/betalord1231/Rbx-Scripts/main/Load_Hub"))()
