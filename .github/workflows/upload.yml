@@ -24,11 +24,11 @@ jobs:
 
       - name: Run script
         run: |
-          files=$(git diff --name-only HEAD~1..HEAD)
+          files=$(git diff --name-only HEAD^ HEAD)
           scriptId=$SCRIPT_ID
 
           for file in $files; do
-            content=$(base64 -w 0 $file)
+            content=$(base64 -w 0 "$file")
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
                              --request POST \
