@@ -15,7 +15,7 @@ jobs:
 
       - name: Set random script ID
         id: set-script-id
-        run: echo "::set-env name=SCRIPT_ID::$(shuf -i 100000-999999 -n 1)"
+        run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
       - name: List changed files
         id: list-files
