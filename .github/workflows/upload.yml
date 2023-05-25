@@ -20,6 +20,10 @@ jobs:
       - name: Install httpie
         run: sudo apt-get install -y httpie
 
+      - name: Generate random script ID
+        id: generate-script-id
+        run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
+
       - name: Read file changes
         id: read-file-changes
         run: |
@@ -32,7 +36,7 @@ jobs:
         run: |
           while IFS= read -r file; do
             content=$(base64 $file)
-            script_id=$(basename $file | cut -f1 -d.)
+            script_id=${{ env.SCRIPT_ID }}
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
             response=$(http -f POST https://scriptserverelias.000webhostapp.com/upload.php <<< $payload)
             echo "$response"
