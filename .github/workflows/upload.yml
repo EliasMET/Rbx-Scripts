@@ -15,7 +15,7 @@ jobs:
 
       - name: Set random script ID
         id: set-script-id
-        run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
+        run: echo "SCRIPT_ID=$(shuf -i 10000-99999 -n 1)" >> $GITHUB_ENV
 
       - name: Install cURL and base64
         run: |
@@ -42,7 +42,7 @@ jobs:
 
           for file in $files; do
             content=$(base64 -w 0 "$file")
-            scriptId=$(md5sum "$file" | awk '{print $1}' | tr -dc '0-9')
+            scriptId=$(md5sum "$file" | awk '{print $1}' | tr -dc '0-9' | head -c 5)
 
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
