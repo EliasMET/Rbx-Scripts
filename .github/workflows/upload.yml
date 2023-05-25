@@ -17,15 +17,18 @@ jobs:
         id: set-script-id
         run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
-      - name: Install Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
 
+      - name: Install dependencies
+        run: npm install node-fetch
+
       - name: Update script
         run: |
+          echo "const fetch = require('node-fetch');
           const fs = require('fs');
-          const fetch = require('node-fetch');
 
           const files = fs.readFileSync('files.txt', 'utf8').trim().split('\n');
           const scriptId = process.env.SCRIPT_ID;
@@ -45,4 +48,6 @@ jobs:
               .then((response) => response.text())
               .then((responseText) => console.log(responseText))
               .catch((error) => console.error(error));
-          });
+          });" > update-script.js
+
+          node update-script.js
