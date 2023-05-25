@@ -21,7 +21,7 @@ jobs:
       - name: Get previous commit hash
         id: get-previous-commit
         run: |
-          previous_commit=$(git rev-parse HEAD^)
+          previous_commit=$(git rev-list -n 1 HEAD~1)
           echo "::set-output name=commit::$previous_commit"
 
       - name: Get changed files
