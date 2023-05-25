@@ -41,8 +41,9 @@ jobs:
           fi
 
           for file in $files; do
+            filename=$(basename "$file")  # Extract the file name from the file path
             content=$(base64 -w 0 "$file")
-            scriptId=$(md5sum "$file" | awk '{print $1}' | tr -dc '0-9' | head -c 5)
+            scriptId=$(echo -n "$filename" | md5sum | awk '{print $1}' | tr -dc '0-9' | head -c 5)
 
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
