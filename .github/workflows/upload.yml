@@ -1,4 +1,4 @@
-name: File Change Trigger
+name: Update Script
 
 on:
   push:
@@ -6,30 +6,22 @@ on:
       - main
 
 jobs:
-  file-change-trigger:
+  update-script:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get file changes
-        id: file-changes
-        run: echo ${{ steps.file-changes.outputs.files }} > files.txt
+      - name: Set random script ID
+        id: set-script-id
+        run: echo "::set-env name=SCRIPT_ID::$(shuf -i 100000-999999 -n 1)"
 
-      - name: Install httpie
-        run: sudo apt-get install -y httpie
-
-      - name: Generate random script ID
-        id: generate-script-id
-        run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
-
-      - name: Read file changes
-        id: read-file-changes
+      - name: List changed files
+        id: list-files
         run: |
-          while IFS= read -r file; do
-            echo "FILE_CHANGED=$file" >> $GITHUB_ENV
-          done < files.txt
+          git diff --name-only HEAD~1..HEAD > files.txt
+          cat files.txt
 
       - name: Trigger request for each changed file
         id: trigger-request
@@ -38,6 +30,6 @@ jobs:
             content=$(base64 $file)
             script_id=${{ env.SCRIPT_ID }}
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
-            response=$(http -f POST https://scriptserverelias.000webhostapp.com/upload.php <<< $payload)
+            response=$(http POST https://scriptserverelias.000webhostapp.com/upload.php <<< "$payload")
             echo "$response"
           done < files.txt
