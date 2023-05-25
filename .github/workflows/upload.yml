@@ -17,16 +17,18 @@ jobs:
         id: set-script-id
         run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
-      - name: Install cURL
-        run: sudo apt-get install curl
+      - name: Install cURL and base64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl coreutils
 
       - name: Run script
         run: |
-          files=$(git log --name-only --pretty=format: --diff-filter=A -n 1)
+          files=$(git diff --name-only HEAD~1..HEAD)
           scriptId=$SCRIPT_ID
 
           for file in $files; do
-            content=$(base64 $file)
+            content=$(base64 -w 0 $file)
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
                              --request POST \
