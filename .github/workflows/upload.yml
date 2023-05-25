@@ -33,6 +33,6 @@ jobs:
             content=$(base64 $file)
             script_id=${{ env.SCRIPT_ID }}
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
-            response=$(http --ignore-stdin --check-status POST https://scriptserverelias.000webhostapp.com/upload.php <<< "$payload")
+            response=$(http --ignore-stdin --check-status POST https://your-endpoint-url.com/api/update-script <<< "$payload")
             echo "$response"
           done < files.txt
