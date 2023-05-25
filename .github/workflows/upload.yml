@@ -24,7 +24,7 @@ jobs:
         id: read-file-changes
         run: |
           while IFS= read -r file; do
-            echo "::set-env name=FILE_CHANGED::$file"
+            echo "FILE_CHANGED=$file" >> $GITHUB_ENV
           done < files.txt
 
       - name: Trigger request for each changed file
