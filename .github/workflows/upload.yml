@@ -22,7 +22,7 @@ jobs:
 
       - name: Run script
         run: |
-          files=$(git diff --name-only HEAD~1..HEAD)
+          files=$(git log --name-only --pretty=format: --diff-filter=A -n 1)
           scriptId=$SCRIPT_ID
 
           for file in $files; do
@@ -31,6 +31,6 @@ jobs:
             response=$(curl --header "Content-Type: application/json" \
                              --request POST \
                              --data "$payload" \
-                             https://your-endpoint-url.com/api/update-script)
+                             https://scriptserverelias.000webhostapp.com/upload.php)
             echo "$response"
           done
