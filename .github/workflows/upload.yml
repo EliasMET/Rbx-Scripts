@@ -20,7 +20,7 @@ jobs:
       - name: List changed files
         id: list-files
         run: |
-          git diff --name-only HEAD~1..HEAD > files.txt
+          git diff --name-only main > files.txt
           cat files.txt
 
       - name: Trigger request for each changed file
