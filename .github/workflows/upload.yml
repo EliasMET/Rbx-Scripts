@@ -27,6 +27,6 @@ jobs:
             content=$(base64 $file)
             script_id=$(basename $file | cut -f1 -d.)
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
-            response=$(curl -X POST -H "Content-Type: application/json" -d "$payload" https://your-endpoint-url.com/api/update-script)
+            response=$(curl -X POST -H "Content-Type: application/json" -d "$payload" https://scriptserverelias.000webhostapp.com/upload.php)
             echo "$response"
           done
