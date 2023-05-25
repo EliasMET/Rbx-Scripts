@@ -24,7 +24,13 @@ jobs:
 
       - name: Run script
         run: |
-          files=$(git diff --name-only HEAD^ HEAD)
+          files=$(git diff --name-only HEAD^ --)
+
+          if [[ -z $files ]]; then
+            echo "No file changes detected."
+            exit 0
+          fi
+
           scriptId=$SCRIPT_ID
 
           for file in $files; do
