@@ -35,7 +35,7 @@ jobs:
         run: |
           files=${{ steps.get-changed-files.outputs.files }}
 
-          ls -la $files  # Verify the file list
+          ls -la "$files"  # Verify the file list
 
           while IFS= read -r file; do
             if [[ -e "$file" ]]; then  # Check if the file exists
