@@ -17,37 +17,17 @@ jobs:
         id: set-script-id
         run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: npm install axios
-
-      - name: Update script
+      - name: Run script
         run: |
-          const axios = require('axios').default;
-          const fs = require('fs');
+          files=$(git diff --name-only HEAD~1..HEAD)
+          scriptId=$SCRIPT_ID
 
-          const files = fs.readFileSync('files.txt', 'utf8').trim().split('\n');
-          const scriptId = process.env.SCRIPT_ID;
-
-          async function updateScript() {
-            try {
-              for (const file of files) {
-                const content = fs.readFileSync(file, 'base64');
-                const payload = {
-                  script_id: scriptId,
-                  text: content,
-                };
-
-                const response = await axios.post('https://your-endpoint-url.com/api/update-script', payload);
-                console.log(response.data);
-              }
-            } catch (error) {
-              console.error(error);
-            }
-          }
-
-          updateScript();
+          for file in $files; do
+            content=$(base64 $file)
+            payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
+            response=$(curl --header "Content-Type: application/json" \
+                             --request POST \
+                             --data "$payload" \
+                             https://your-endpoint-url.com/api/update-script)
+            echo "$response"
+          done
