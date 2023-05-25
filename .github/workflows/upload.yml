@@ -37,7 +37,9 @@ jobs:
 
           ls -la $files  # Verify the file list
 
-          for file in "$files"; do
+          IFS=$'\n' read -rd '' -a files_array <<<"$files"
+
+          for file in "${files_array[@]}"; do
             if [[ -e "$file" ]]; then  # Check if the file exists
               filename=$(basename "$file")
               content=$(base64 -w 0 "$file")
