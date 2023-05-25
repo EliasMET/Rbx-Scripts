@@ -13,6 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set random script ID
+        id: set-script-id
+        run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
+
       - name: Install cURL and base64
         run: |
           sudo apt-get update
@@ -37,8 +41,9 @@ jobs:
           fi
 
           for file in $files; do
-            scriptId=$(echo -n "$file" | md5sum | awk '{print $1}')
             content=$(base64 -w 0 "$file")
+            scriptId=$(crc32 "$file")
+
             payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
                              --request POST \
