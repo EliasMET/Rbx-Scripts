@@ -13,6 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set random script ID
+        id: set-script-id
+        run: echo "SCRIPT_ID=$(shuf -i 10000-99999 -n 1)" >> $GITHUB_ENV
+
       - name: Install cURL and base64
         run: |
           sudo apt-get update
@@ -22,7 +26,9 @@ jobs:
         id: get-changed-files
         run: |
           commit_sha=$(git rev-parse HEAD)
-          changed_files=$(git diff --name-only HEAD^ --)
+          changed_files=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+                             https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$commit_sha | \
+                             jq -r '.files[].filename')
           echo "::set-output name=files::$changed_files"
 
       - name: Run script
@@ -35,17 +41,13 @@ jobs:
           fi
 
           for file in $files; do
-            filename=$(basename -- "$file")
-            extension="${filename##*.}"
-            filename_without_extension="${filename%.*}"
-            hash=$(echo -n "$filename" | md5sum | awk '{print $1}')
-            script_id=$(printf "%d\n" "0x${hash}" 2>/dev/null)
+            content=$(base64 -w 0 "$file")
+            scriptId=$(md5sum "$file" | awk '{print $1}' | tr -dc '0-9' | head -c 5)
 
-            # Use the generated script_id in your request
-            # Replace <YOUR_ENDPOINT_URL> with your actual endpoint URL
+            payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
             response=$(curl --header "Content-Type: application/json" \
                              --request POST \
-                             --data "{\"script_id\": \"$script_id\", \"text\": \"content\"}" \
+                             --data "$payload" \
                              https://scriptserverelias.000webhostapp.com/upload.php)
             echo "$response"
           done
