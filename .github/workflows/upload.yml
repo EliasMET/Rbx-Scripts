@@ -17,6 +17,9 @@ jobs:
         id: set-script-id
         run: echo "SCRIPT_ID=$(shuf -i 100000-999999 -n 1)" >> $GITHUB_ENV
 
+      - name: Install cURL
+        run: sudo apt-get install curl
+
       - name: Run script
         run: |
           files=$(git diff --name-only HEAD~1..HEAD)
