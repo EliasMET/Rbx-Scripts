@@ -35,20 +35,21 @@ jobs:
         run: |
           files=${{ steps.get-changed-files.outputs.files }}
 
-          if [[ -z $files ]]; then
-            echo "No file changes detected."
-            exit 0
-          fi
+          ls -la $files  # Verify the file list
 
-          for file in $files; do
-            filename=$(basename "$file")  # Extract the file name from the file path
-            content=$(base64 -w 0 "$file")
-            scriptId=$(echo -n "$filename" | md5sum | awk '{print $1}' | tr -dc '0-9' | head -c 5)
+          for file in "$files"; do
+            if [[ -e "$file" ]]; then  # Check if the file exists
+              filename=$(basename "$file")
+              content=$(base64 -w 0 "$file")
+              scriptId=$(echo -n "$filename" | md5sum | awk '{print $1}' | tr -dc '0-9' | head -c 5)
 
-            payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
-            response=$(curl --header "Content-Type: application/json" \
-                             --request POST \
-                             --data "$payload" \
-                             https://scriptserverelias.000webhostapp.com/upload.php)
-            echo "$response"
+              payload="{ \"script_id\": \"$scriptId\", \"text\": \"$content\" }"
+              response=$(curl --header "Content-Type: application/json" \
+                               --request POST \
+                               --data "$payload" \
+                               https://scriptserverelias.000webhostapp.com/upload.php)
+              echo "$response"
+            else
+              echo "File '$file' does not exist."
+            fi
           done
