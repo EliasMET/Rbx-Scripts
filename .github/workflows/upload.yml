@@ -1,0 +1,28 @@
+name: File Change Trigger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  file-change-trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get file changes
+        id: file-changes
+        run: echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
+
+      - name: Trigger request for each changed file
+        id: trigger-request
+        run: |
+          for file in ${{ steps.file-changes.outputs.files }}; do
+            content=$(base64 $file)
+            script_id=$(basename $file | cut -f1 -d.)
+            payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
+            curl -X POST -H "Content-Type: application/json" -d "$payload" https://your-endpoint-url.com/api/update-script
+          done
