@@ -17,6 +17,9 @@ jobs:
         id: file-changes
         run: echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
 
+      - name: Install cURL
+        run: sudo apt-get install -y curl
+
       - name: Trigger request for each changed file
         id: trigger-request
         run: |
@@ -25,5 +28,5 @@ jobs:
             script_id=$(basename $file | cut -f1 -d.)
             payload="{ \"script_id\": \"$script_id\", \"text\": \"$content\" }"
             response=$(curl -X POST -H "Content-Type: application/json" -d "$payload" https://your-endpoint-url.com/api/update-script)
-            echo $response
+            echo "$response"
           done
