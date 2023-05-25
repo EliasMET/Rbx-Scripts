@@ -35,9 +35,9 @@ jobs:
         run: |
           files=${{ steps.get-changed-files.outputs.files }}
 
-          ls -la "$files"  # Verify the file list
+          IFS=$'\n' read -rd '' -a files_array <<<"$files"
 
-          while IFS= read -r file; do
+          for file in "${files_array[@]}"; do
             if [[ -e "$file" ]]; then  # Check if the file exists
               filename=$(basename "$file")
               content=$(base64 -w 0 "$file")
@@ -52,4 +52,4 @@ jobs:
             else
               echo "File '$file' does not exist."
             fi
-          done <<< "$files"
+          done
