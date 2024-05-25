@@ -47,7 +47,7 @@ jobs:
               response=$(curl --header "Content-Type: application/json" \
                                --request POST \
                                --data "$payload" \
-                               https://scriptserverelias.000webhostapp.com/upload.php)
+                               https://api.trophyhub.me/upload.php)
               echo "$response"
             else
               echo "File '$file' does not exist."
